@@ -202,6 +202,46 @@
   .sl-opt .k{background:var(--ink);color:#fff;width:20px;height:20px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;flex:none;font-weight:700}
   .sl-opt .t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
   .sl-votes{font-family:var(--mono);font-size:11px;color:var(--orange);white-space:nowrap}
+
+  /* content board */
+  .board{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;align-items:start}
+  @media(max-width:900px){.board{grid-template-columns:1fr}}
+  .bcolhead{display:flex;align-items:center;gap:8px;margin-bottom:12px;padding:0 2px}
+  .bcolhead .dot{width:9px;height:9px;border-radius:50%}
+  .bcolhead h3{font-size:13.5px;margin:0;font-weight:700}
+  .bcolhead .count{font-family:var(--mono);font-size:11px;color:var(--muted);background:var(--panel);border:1px solid var(--line);padding:1px 8px;border-radius:20px}
+  .bcard{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:14px;margin-bottom:12px;cursor:pointer;transition:box-shadow .15s,transform .05s}
+  .bcard:hover{box-shadow:0 6px 20px rgba(26,29,33,.08)}
+  .bcard:active{transform:translateY(1px)}
+  .bcard-top{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+  .bcard-text{font-size:13px;color:#2c313a;line-height:1.5;white-space:pre-wrap;display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden}
+  .bcard-media{margin-top:10px}
+  .bcard-media canvas{width:150px;max-width:100%;border-radius:9px;border:1px solid var(--line);display:block}
+  .bcard-note{margin-top:9px;font-size:11.5px;color:var(--faint)}
+  .bcard-foot{display:flex;align-items:center;gap:10px;margin-top:12px;padding-top:11px;border-top:1px solid var(--line);flex-wrap:wrap}
+  .bcard-act{margin-left:auto}
+  .mini{font-size:12px;font-weight:600;padding:5px 11px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink)}
+  .mini:hover{background:var(--bg)}
+  .mini.orange{background:var(--orange);color:#fff;border-color:var(--orange)}
+  .bcol-empty{border:1px dashed var(--line);border-radius:12px;padding:20px;text-align:center;color:var(--faint);font-size:12.5px}
+
+  /* editor two-column + linkedin preview */
+  .editor-grid{display:grid;grid-template-columns:1fr 330px;gap:24px}
+  @media(max-width:820px){.editor-grid{grid-template-columns:1fr}}
+  .editor-right .lb{margin-bottom:8px}
+  .li-preview{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px;box-shadow:0 2px 10px rgba(0,0,0,.04);position:sticky;top:0}
+  .li-head{display:flex;gap:10px;align-items:center;margin-bottom:12px}
+  .li-av{width:44px;height:44px;border-radius:50%;color:#fff;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;flex:none}
+  .li-name{font-weight:700;font-size:14px;color:#1d1c1d;line-height:1.2}
+  .li-sub{font-size:11.5px;color:#7b7b7b;margin-top:2px}
+  .li-body{font-size:13.5px;color:#1d1c1d;line-height:1.5;white-space:pre-wrap;word-wrap:break-word;overflow-wrap:anywhere}
+  .li-more{color:#5b6472}
+  .li-rest{color:#b0b0b0}
+  .li-ph{color:#b0b0b0}
+  .li-media{width:100%;border-radius:8px;margin-top:12px;border:1px solid var(--line);display:block}
+  .li-media-note{margin-top:12px;padding:16px;border:1px dashed var(--line);border-radius:8px;text-align:center;color:var(--faint);font-size:12px}
+  .li-actions{display:flex;justify-content:space-around;margin-top:12px;padding-top:10px;border-top:1px solid var(--line);color:#7b7b7b;font-size:12px;font-weight:600}
+  .li-actions span{display:inline-flex;align-items:center;gap:5px}
   /* login */
   .login-overlay{position:fixed;inset:0;background:var(--bg);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
   .login-overlay.show{display:flex}
@@ -269,46 +309,54 @@
 
 <!-- editor modal -->
 <div class="overlay" id="overlay">
-  <div class="modal">
+  <div class="modal" style="max-width:940px">
     <div class="mhead">
       <span class="eyebrow" id="mEyebrow">Bericht</span>
       <h2 id="mTitle">Bewerken</h2>
       <button class="x" id="mClose">&times;</button>
     </div>
     <div class="mbody">
-      <div class="row">
-        <div class="field"><label class="lb">Auteur</label><select class="full" id="fAuthor"></select></div>
-        <div class="field"><label class="lb">Pijler</label><select class="full" id="fPillar"></select></div>
-      </div>
-      <label class="lb">Berichttekst</label>
-      <textarea id="fText" placeholder="Schrijf hier, of genereer via Nieuw."></textarea>
-      <div class="meta-row">
-        <span><b id="mCount">0</b> tekens</span>
-        <span>Eerste regel is de hook. LinkedIn toont ~140 tekens voor "meer".</span>
-      </div>
-      <div class="flags" id="mFlags"></div>
-      <div class="row" style="margin-top:16px">
-        <div class="field"><label class="lb">Beeld (notitie)</label><input class="full" id="fImage" placeholder="bijv. grafiek stilstand"></div>
-        <div class="field"><label class="lb">Datum</label><input class="full" type="date" id="fDate"></div>
-        <div class="field" style="max-width:130px"><label class="lb">Tijd</label><input class="full" type="time" id="fTime"></div>
-      </div>
-      <div class="cardgen">
-        <label class="lb">Beeldkaart genereren</label>
-        <div class="tmpls" id="cgTmpls">
-          <button class="tmpl on" data-t="ink">Donker</button>
-          <button class="tmpl" data-t="light">Licht</button>
-          <button class="tmpl" data-t="orange">Oranje</button>
+     <div class="editor-grid">
+      <div class="editor-left">
+        <div class="row">
+          <div class="field"><label class="lb">Auteur</label><select class="full" id="fAuthor"></select></div>
+          <div class="field"><label class="lb">Pijler</label><select class="full" id="fPillar"></select></div>
         </div>
-        <input class="full" id="cgText" placeholder="Tekst op de kaart (standaard de hook)">
-        <div class="cgrow">
-          <canvas id="cgCanvas" width="1080" height="1080"></canvas>
-          <div class="cgactions">
-            <button class="btn ghost sm" id="cgAttach">Koppel aan post</button>
-            <button class="btn ghost sm" id="cgDownload">Download PNG</button>
-            <div class="cghint">Gemerkte FLINZ-kaart, gemaakt in de browser. Geen AI, geen kosten.</div>
+        <label class="lb">Berichttekst</label>
+        <textarea id="fText" placeholder="Schrijf hier, of genereer via Nieuw."></textarea>
+        <div class="meta-row">
+          <span><b id="mCount">0</b> tekens</span>
+          <span>Eerste regel is de hook. LinkedIn toont ~140 tekens voor "meer".</span>
+        </div>
+        <div class="flags" id="mFlags"></div>
+        <div class="row" style="margin-top:16px">
+          <div class="field"><label class="lb">Beeld (notitie)</label><input class="full" id="fImage" placeholder="bijv. grafiek stilstand"></div>
+          <div class="field"><label class="lb">Datum</label><input class="full" type="date" id="fDate"></div>
+          <div class="field" style="max-width:120px"><label class="lb">Tijd</label><input class="full" type="time" id="fTime"></div>
+        </div>
+        <div class="cardgen">
+          <label class="lb">Beeldkaart genereren</label>
+          <div class="tmpls" id="cgTmpls">
+            <button class="tmpl on" data-t="ink">Donker</button>
+            <button class="tmpl" data-t="light">Licht</button>
+            <button class="tmpl" data-t="orange">Oranje</button>
+          </div>
+          <input class="full" id="cgText" placeholder="Tekst op de kaart (standaard de hook)">
+          <div class="cgrow">
+            <canvas id="cgCanvas" width="1080" height="1080"></canvas>
+            <div class="cgactions">
+              <button class="btn ghost sm" id="cgAttach">Koppel aan post</button>
+              <button class="btn ghost sm" id="cgDownload">Download PNG</button>
+              <div class="cghint">Gemerkte FLINZ-kaart, gemaakt in de browser. Geen AI, geen kosten.</div>
+            </div>
           </div>
         </div>
       </div>
+      <div class="editor-right">
+        <label class="lb">Voorbeeld op LinkedIn</label>
+        <div class="li-preview" id="liPreview"></div>
+      </div>
+     </div>
     </div>
     <div class="mfoot">
       <button class="btn ghost sm" id="bConcept">Bewaar concept</button>
@@ -477,43 +525,47 @@ function renderPipeline(){
     '<button class="btn orange" id="newBtn">+ Nieuw bericht</button>'+
     '<div class="search"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input id="tSearch" placeholder="Zoek bericht..." value="'+escapeHtml(q)+'"></div>'+
     '<select id="fltA"><option value="all">Alle auteurs</option>'+AUTHORS.map(function(a){return '<option value="'+a.id+'"'+(fltAuthor===a.id?' selected':'')+'>'+a.name+'</option>';}).join("")+'</select>'+
-    '<select id="fltS"><option value="all">Alle statussen</option>'+STATUSES.map(function(s){return '<option value="'+s.id+'"'+(fltStatus===s.id?' selected':'')+'>'+s.name+'</option>';}).join("")+'</select>'+
     '<button class="btn ghost" id="seedBtn">Laad voorbeeldposts</button>'+
     '</div>';
-  var rows=state.posts.filter(function(p){
-    return (fltPillar==="all"||p.pillar===fltPillar)&&(fltAuthor==="all"||p.author===fltAuthor)&&(fltStatus==="all"||p.status===fltStatus)&&(q===""||p.text.toLowerCase().indexOf(q.toLowerCase())!==-1);
-  }).sort(function(a,b){return (b.updatedAt||"")<(a.updatedAt||"")?-1:1;});
-  html+='<div class="tablewrap"><div class="tscroll"><table><thead><tr>'+
-    '<th>Pijler</th><th>Status</th><th>Auteur</th><th>Bericht</th><th>Beeld</th><th>Datum</th><th>Stijl</th><th>Goedgekeurd</th>'+
-    '</tr></thead><tbody>';
-  if(rows.length===0){html+='<tr><td colspan="8"><div class="empty">Nog geen berichten. Maak er een aan of klik op <b>Laad voorbeeldposts</b> om te testen.</div></td></tr>';}
-  rows.forEach(function(p){
-    var au=authorOf(p.author),pi=pillarOf(p.pillar),st=statusOf(p.status);
-    var iss=issueCount(p.text);
-    var stijl=iss>0?'<span class="stijl-warn">\u25B2 '+iss+'</span>':'<span class="stijl-ok">\u2713 schoon</span>';
-    var togOn=p.status!=="concept";
-    html+='<tr data-open="'+p.id+'">'+
-      '<td><span class="tag green">'+pi.name+'</span></td>'+
-      '<td><span class="tag '+st.cls+'">'+st.name+'</span></td>'+
-      '<td><span class="tag grey"><span class="adot" style="background:'+au.color+'"></span>'+au.name.split(" ")[0]+'</span></td>'+
-      '<td class="bericht"><b>'+escapeHtml(firstLine(p.text))+'</b><span>'+escapeHtml(rest(p.text)||"\u00A0")+'</span></td>'+
-      '<td>'+(p.card?'<canvas class="thumb" width="84" height="84" data-thumb="'+p.id+'"></canvas>':'<span class="muted-cell">'+(p.image?escapeHtml(p.image):"\u2014")+'</span>')+'</td>'+
-      '<td class="datecell">'+(p.date?fmtDate(p.date)+(p.time?" "+p.time:""):"\u2014")+'</td>'+
-      '<td>'+stijl+'</td>'+
-      '<td><button class="tog'+(togOn?' on':'')+'" data-tog="'+p.id+'"></button></td>'+
-    '</tr>';
+  var base=state.posts.filter(function(p){
+    return (fltPillar==="all"||p.pillar===fltPillar)&&(fltAuthor==="all"||p.author===fltAuthor)&&(q===""||p.text.toLowerCase().indexOf(q.toLowerCase())!==-1);
   });
-  html+='</tbody></table></div></div>';
+  html+='<div class="board">';
+  STATUSES.forEach(function(st){
+    var items=base.filter(function(p){return p.status===st.id;}).sort(function(a,b){return (b.updatedAt||"")<(a.updatedAt||"")?-1:1;});
+    html+='<div class="bcol"><div class="bcolhead"><span class="dot" style="background:'+stColor(st)+'"></span><h3>'+st.name+'</h3><span class="count">'+items.length+'</span></div>';
+    if(items.length===0){html+='<div class="bcol-empty">'+(st.id==="concept"?"Nog geen concepten. Maak er een aan of laad voorbeeldposts.":st.id==="approved"?"Niets goedgekeurd.":"Niets ingepland.")+'</div>';}
+    items.forEach(function(p){html+=boardCard(p);});
+    html+='</div>';
+  });
+  html+='</div>';
   app.innerHTML=html;
   drawThumbs();
   byId("newBtn").onclick=function(){openEditor(null);};
   byId("seedBtn").onclick=loadSeed;
   byId("fltA").onchange=function(){fltAuthor=this.value;renderPipeline();};
-  byId("fltS").onchange=function(){fltStatus=this.value;renderPipeline();};
   byId("tSearch").oninput=function(){q=this.value;renderPipeline();byId("tSearch").focus();};
   app.querySelectorAll(".seg").forEach(function(el){el.onclick=function(){fltPillar=this.dataset.seg;renderPipeline();};});
-  app.querySelectorAll("[data-tog]").forEach(function(el){el.onclick=function(e){e.stopPropagation();toggleApprove(this.getAttribute("data-tog"));};});
-  app.querySelectorAll("tr[data-open]").forEach(function(el){el.onclick=function(){openEditor(this.getAttribute("data-open"));};});
+  app.querySelectorAll("[data-approve]").forEach(function(el){el.onclick=function(e){e.stopPropagation();toggleApprove(this.getAttribute("data-approve"));};});
+  app.querySelectorAll("[data-plan]").forEach(function(el){el.onclick=function(e){e.stopPropagation();openEditor(this.getAttribute("data-plan"));};});
+  app.querySelectorAll(".bcard[data-open]").forEach(function(el){el.onclick=function(){openEditor(this.getAttribute("data-open"));};});
+}
+function stColor(st){return st.id==="concept"?"#9AA1AA":st.id==="approved"?"#E8641C":"#2C8C54";}
+function boardCard(p){
+  var au=authorOf(p.author),pi=pillarOf(p.pillar);
+  var iss=issueCount(p.text);
+  var stijl=iss>0?'<span class="stijl-warn">\u25B2 '+iss+' stijl</span>':'<span class="stijl-ok">\u2713 schoon</span>';
+  var media=p.card?'<div class="bcard-media"><canvas width="150" height="150" data-thumb="'+p.id+'"></canvas></div>':(p.image?'<div class="bcard-note">\uD83D\uDCF7 '+escapeHtml(p.image)+'</div>':'');
+  var act;
+  if(p.status==="concept")act='<button class="mini orange bcard-act" data-approve="'+p.id+'">Keur goed</button>';
+  else if(p.status==="approved")act='<button class="mini bcard-act" data-plan="'+p.id+'">Plan in</button>';
+  else act='<span class="datecell bcard-act">'+(p.date?fmtDate(p.date)+(p.time?" "+p.time:""):"")+'</span>';
+  return '<div class="bcard" data-open="'+p.id+'">'+
+    '<div class="bcard-top"><span class="tag grey"><span class="adot" style="background:'+au.color+'"></span>'+au.name.split(" ")[0]+'</span><span class="tag green">'+pi.name+'</span></div>'+
+    '<div class="bcard-text">'+escapeHtml(p.text||"")+'</div>'+
+    media+
+    '<div class="bcard-foot">'+stijl+act+'</div>'+
+  '</div>';
 }
 function kpiCard(label,val,sub,dark){return '<div class="kpi'+(dark?' dark':'')+'"><div class="deco"></div><div class="lb">'+label+'</div><div class="val">'+val+'</div><div class="vs">'+sub+'</div></div>';}
 function segPill(id,name,n){return '<button class="seg'+(fltPillar===id?' on':'')+'" data-seg="'+id+'">'+name+' <span class="c">'+n+'</span></button>';}
@@ -539,7 +591,7 @@ function openEditor(id){
   fillSelect(byId("fAuthor"),AUTHORS,p.author);
   fillSelect(byId("fPillar"),PILLARS,p.pillar);
   byId("fText").value=p.text;byId("fImage").value=p.image||"";byId("fDate").value=p.date||"";byId("fTime").value=p.time||"";
-  updateFlags();initCardUI(p);overlay.classList.add("show");byId("fText").focus();
+  updateFlags();initCardUI(p);renderLiPreview();overlay.classList.add("show");byId("fText").focus();
 }
 function closeEditor(){overlay.classList.remove("show");state.editing=null;render();}
 function updateFlags(){
@@ -564,6 +616,35 @@ async function commit(status){
   var m=status==="scheduled"?"Ingepland.":status==="approved"?"Goedgekeurd.":"Bewaard.";
   if(had)m+=" Streepjes opgeschoond.";toast(m);
   fetchPosts();
+}
+
+/* ====== linkedin preview ====== */
+function liInitials(name){var pp=(name||"").replace(/\(.*\)/,"").trim().split(/\s+/);return (((pp[0]||"")[0]||"")+((pp[1]||"")[0]||"")).toUpperCase();}
+function renderLiPreview(){
+  var box=byId("liPreview");if(!box)return;
+  var au=authorOf(byId("fAuthor").value);
+  var subs={willem:"Medeoprichter @ FLINZ",peter:"Medeoprichter @ FLINZ",flinz:"Fleet Intelligence Grid"};
+  var sub=subs[au.id]||"FLINZ";
+  var text=cleanDashes(byId("fText").value);
+  var body;
+  if(text.trim()===""){body='<span class="li-ph">Je post verschijnt hier terwijl je typt\u2026</span>';}
+  else if(text.length>140){
+    var cut=text.lastIndexOf(" ",140);if(cut<90)cut=140;
+    body=escapeHtml(text.slice(0,cut)).replace(/\n/g,"<br>")+'<span class="li-more"> \u2026meer</span><span class="li-rest">'+escapeHtml(text.slice(cut)).replace(/\n/g,"<br>")+'</span>';
+  }else{body=escapeHtml(text).replace(/\n/g,"<br>");}
+  var media="";
+  if(state.editing&&state.editing.card){
+    var tmp=document.createElement("canvas");tmp.width=1080;tmp.height=1080;
+    drawCard(tmp,{template:state.editing.card.template,text:state.editing.card.text||firstLine(text)||"FLINZ",pillar:pillarOf(byId("fPillar").value).name});
+    media='<img class="li-media" src="'+tmp.toDataURL("image/png")+'">';
+  }else if(byId("fImage").value.trim()){
+    media='<div class="li-media-note">Beeld: '+escapeHtml(byId("fImage").value.trim())+'</div>';
+  }
+  box.innerHTML=
+    '<div class="li-head"><div class="li-av" style="background:'+au.color+'">'+escapeHtml(liInitials(au.name)||"F")+'</div>'+
+    '<div class="li-meta"><div class="li-name">'+escapeHtml(au.name)+'</div><div class="li-sub">'+sub+' \u00b7 Nu \u00b7 \uD83C\uDF10</div></div></div>'+
+    '<div class="li-body">'+body+'</div>'+media+
+    '<div class="li-actions"><span>\uD83D\uDC4D Like</span><span>\uD83D\uDCAC Reageer</span><span>\uD83D\uDD01 Deel</span><span>\u27A4 Verstuur</span></div>';
 }
 
 /* ====== clipboard ====== */
@@ -719,7 +800,11 @@ function boot(){
   byId("cgText").addEventListener("input",drawPreview);
   byId("fText").addEventListener("input",function(){if(!byId("cgText").value.trim())drawPreview();});
   byId("fPillar").addEventListener("change",drawPreview);
-  byId("cgAttach").onclick=async function(){var p=state.editing;if(!p)return;p.card={template:cardState.template,text:byId("cgText").value.trim()};if(!p.image)p.image="FLINZ-kaart";if(!p._new){try{await updateFields(p.id,{card:p.card,image:p.image});}catch(e){}}toast("Beeldkaart gekoppeld.");};
+  byId("fText").addEventListener("input",renderLiPreview);
+  byId("fAuthor").addEventListener("change",renderLiPreview);
+  byId("fPillar").addEventListener("change",renderLiPreview);
+  byId("fImage").addEventListener("input",renderLiPreview);
+  byId("cgAttach").onclick=async function(){var p=state.editing;if(!p)return;p.card={template:cardState.template,text:byId("cgText").value.trim()};if(!p.image)p.image="FLINZ-kaart";if(!p._new){try{await updateFields(p.id,{card:p.card,image:p.image});}catch(e){}}renderLiPreview();toast("Beeldkaart gekoppeld.");};
   byId("cgDownload").onclick=function(){try{var url=byId("cgCanvas").toDataURL("image/png");var a=document.createElement("a");a.href=url;a.download="flinz-post.png";a.click();toast("PNG gedownload.");}catch(e){toast("Downloaden niet gelukt.");}};
   // slack
   byId("slClose").onclick=function(){slackOverlay.classList.remove("show");};
