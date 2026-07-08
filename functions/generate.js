@@ -42,7 +42,7 @@ export async function onRequestPost(context) {
       "3. Geen AI-buzz. Vermijd woorden als unlock, leverage, elevate, game-changer, revolutionair, naadloos, 'in een wereld waarin', 'de kracht van'.",
       "4. Sterke hook op de eerste regel. Korte zinnen. Witruimte tussen alinea's.",
       "5. Concreet boven algemeen. Verzin NOOIT cijfers of feiten. Als een getal nodig is, gebruik [X%] of [cijfer] als plaatshouder.",
-      "6. Maximaal 3 hashtags, alleen als ze waarde toevoegen. Optioneel.",
+      "6. Sluit elke post af met een lege regel en daarna precies 3 relevante Nederlandse hashtags die passen bij FLINZ en de gekozen pijler (bijvoorbeeld #wagenparkbeheer #fleetmanagement #insurtech #schadebeheer). Precies 3, niet meer.",
       "7. Geen holle superlatieven."
     ].join("\n");
 

@@ -344,12 +344,18 @@
         </div>
         <div class="cardgen">
           <label class="lb">Beeldkaart genereren</label>
+          <div class="tmpls" id="cgTypes">
+            <button class="tmpl on" data-ly="statement">Statement</button>
+            <button class="tmpl" data-ly="stat">Statistiek</button>
+            <button class="tmpl" data-ly="quote">Quote</button>
+          </div>
           <div class="tmpls" id="cgTmpls">
             <button class="tmpl on" data-t="ink">Donker</button>
             <button class="tmpl" data-t="light">Licht</button>
             <button class="tmpl" data-t="orange">Oranje</button>
           </div>
           <input class="full" id="cgText" placeholder="Tekst op de kaart (standaard de hook)">
+          <div class="cghint" id="cgTypeHint" style="margin:6px 0 0"></div>
           <div class="cgrow">
             <canvas id="cgCanvas" width="1080" height="1080"></canvas>
             <div class="cgactions">
@@ -643,7 +649,7 @@ function renderLiPreview(){
   var media="";
   if(state.editing&&state.editing.card){
     var tmp=document.createElement("canvas");tmp.width=1080;tmp.height=1080;
-    drawCard(tmp,{template:state.editing.card.template,text:state.editing.card.text||firstLine(text)||"FLINZ",pillar:pillarOf(byId("fPillar").value).name});
+    drawCard(tmp,{template:state.editing.card.template,layout:state.editing.card.layout,text:state.editing.card.text||firstLine(text)||"FLINZ",pillar:pillarOf(byId("fPillar").value).name,author:authorOf(byId("fAuthor").value).name});
     media='<img class="li-media" src="'+tmp.toDataURL("image/png")+'">';
   }else if(byId("fImage").value.trim()){
     media='<div class="li-media-note">Beeld: '+escapeHtml(byId("fImage").value.trim())+'</div>';
@@ -661,29 +667,53 @@ function fb(t){var ta=document.createElement("textarea");ta.value=t;ta.style.pos
 
 /* ====== beeldkaart-generator ====== */
 var CSANS="Helvetica,Arial,sans-serif";
-var cardState={template:"ink"};
+var cardState={template:"ink",layout:"statement"};
 function cardWrap(ctx,text,maxW,size,weight){ctx.font=weight+" "+size+"px "+CSANS;var words=(text||"").replace(/\n+/g," ").split(/\s+/).filter(Boolean);var lines=[],cur="";words.forEach(function(w){var t=cur?cur+" "+w:w;if(ctx.measureText(t).width>maxW&&cur){lines.push(cur);cur=w;}else cur=t;});if(cur)lines.push(cur);return lines;}
 function drawCard(cv,cfg){
   var ctx=cv.getContext("2d");var S=cv.width;var k=S/1080;
   var pal=({ink:{bg:"#1E2632",fg:"#FFFFFF",ac:"#E8641C",ft:"#E8641C",sub:"#9aa4b2"},light:{bg:"#FBFAF8",fg:"#1E2632",ac:"#E8641C",ft:"#E8641C",sub:"#9AA1AC"},orange:{bg:"#E8641C",fg:"#FFFFFF",ac:"#FFFFFF",ft:"#FFFFFF",sub:"#ffe0cd"}})[cfg.template]||{bg:"#fff",fg:"#000",ac:"#000",ft:"#000",sub:"#888"};
   ctx.clearRect(0,0,S,S);ctx.fillStyle=pal.bg;ctx.fillRect(0,0,S,S);
-  var padc=90*k;
+  var padc=90*k,footY=S-padc,maxW=S-2*padc;
   ctx.fillStyle=pal.ac;ctx.fillRect(padc,padc,64*k,7*k);
   ctx.textBaseline="alphabetic";ctx.textAlign="left";
   ctx.fillStyle=pal.ft;ctx.font="700 "+(24*k)+"px "+CSANS;
   ctx.fillText((cfg.pillar||"FLINZ").toUpperCase(),padc,padc+52*k);
-  var hookTop=padc+92*k,footY=S-padc,maxW=S-2*padc,maxH=footY-hookTop-46*k;
-  var size=104*k,lines=[];
-  for(;size>=38*k;size-=4*k){lines=cardWrap(ctx,cfg.text,maxW,size,"800");if(lines.length*size*1.16<=maxH)break;}
-  ctx.font="800 "+size+"px "+CSANS;ctx.fillStyle=pal.fg;
-  var y=hookTop+size;lines.forEach(function(l){ctx.fillText(l,padc,y);y+=size*1.16;});
-  ctx.font="800 "+(30*k)+"px "+CSANS;ctx.fillStyle=pal.ft;ctx.fillText("FLINZ",padc,footY);
+  var layout=cfg.layout||"statement";
+  if(layout==="stat"){
+    var parts=(cfg.text||"").split("\n");
+    var stat=(parts[0]||"").trim()||"[cijfer]";
+    var label=parts.slice(1).join(" ").trim();
+    var ssize=280*k;ctx.font="800 "+ssize+"px "+CSANS;
+    while(ctx.measureText(stat).width>maxW&&ssize>90*k){ssize-=8*k;ctx.font="800 "+ssize+"px "+CSANS;}
+    var top=padc+140*k;ctx.fillStyle=pal.fg;ctx.fillText(stat,padc,top+ssize*0.82);
+    if(label){var lsize=42*k;var l2=cardWrap(ctx,label,maxW,lsize,"600");ctx.font="600 "+lsize+"px "+CSANS;ctx.fillStyle=pal.fg;var yy=top+ssize*0.82+64*k+lsize;l2.forEach(function(l){ctx.fillText(l,padc,yy);yy+=lsize*1.2;});}
+  }else if(layout==="quote"){
+    ctx.fillStyle=pal.ac;ctx.font="800 "+(190*k)+"px Georgia,serif";ctx.fillText("\u201C",padc-8*k,padc+230*k);
+    var qTop=padc+270*k,maxHq=footY-qTop-80*k;
+    var qs=80*k,ql=[];for(;qs>=32*k;qs-=4*k){ql=cardWrap(ctx,cfg.text,maxW,qs,"700");if(ql.length*qs*1.2<=maxHq)break;}
+    ctx.font="700 "+qs+"px "+CSANS;ctx.fillStyle=pal.fg;var qy=qTop+qs;ql.forEach(function(l){ctx.fillText(l,padc,qy);qy+=qs*1.2;});
+    if(cfg.author){ctx.font="700 "+(26*k)+"px "+CSANS;ctx.fillStyle=pal.ac;ctx.fillText(cfg.author,padc,footY-48*k);}
+  }else{
+    var hookTop=padc+92*k,maxH=footY-hookTop-46*k;
+    var size=104*k,lines=[];for(;size>=38*k;size-=4*k){lines=cardWrap(ctx,cfg.text,maxW,size,"800");if(lines.length*size*1.16<=maxH)break;}
+    ctx.font="800 "+size+"px "+CSANS;ctx.fillStyle=pal.fg;var y=hookTop+size;lines.forEach(function(l){ctx.fillText(l,padc,y);y+=size*1.16;});
+  }
+  ctx.textAlign="left";ctx.font="800 "+(30*k)+"px "+CSANS;ctx.fillStyle=pal.ft;ctx.fillText("FLINZ",padc,footY);
   ctx.font="400 "+(22*k)+"px "+CSANS;ctx.fillStyle=pal.sub;ctx.textAlign="right";ctx.fillText("flinz.net",S-padc,footY);ctx.textAlign="left";
 }
 function currentHook(){var h=firstLine(byId("fText").value).trim();return h||"FLINZ";}
-function drawPreview(){var txt=byId("cgText").value.trim()||currentHook();drawCard(byId("cgCanvas"),{template:cardState.template,text:txt,pillar:pillarOf(byId("fPillar").value).name});}
-function initCardUI(p){cardState.template=(p.card&&p.card.template)||"ink";byId("cgText").value=(p.card&&p.card.text)||"";document.querySelectorAll("#cgTmpls .tmpl").forEach(function(b){b.classList.toggle("on",b.dataset.t===cardState.template);});drawPreview();}
-function drawThumbs(){document.querySelectorAll("[data-thumb]").forEach(function(cv){var id=cv.getAttribute("data-thumb");var p=state.posts.filter(function(x){return x.id===id;})[0];if(p&&p.card)drawCard(cv,{template:p.card.template,text:p.card.text||firstLine(p.text),pillar:pillarOf(p.pillar).name});});}
+function cgAuthorName(){return authorOf(byId("fAuthor").value).name;}
+var CG_HINTS={statement:"De tekst wordt groot als statement getoond. Standaard je hook.",stat:"Eerste regel wordt het grote cijfer, de rest eronder het label. Bijvoorbeeld: [X%] op regel 1, uitleg op regel 2.",quote:"De tekst wordt als citaat getoond, met de auteursnaam eronder."};
+function drawPreview(){var txt=byId("cgText").value.trim()||currentHook();if(byId("cgTypeHint"))byId("cgTypeHint").textContent=CG_HINTS[cardState.layout]||"";drawCard(byId("cgCanvas"),{template:cardState.template,layout:cardState.layout,text:txt,pillar:pillarOf(byId("fPillar").value).name,author:cgAuthorName()});}
+function initCardUI(p){
+  cardState.template=(p.card&&p.card.template)||"ink";
+  cardState.layout=(p.card&&p.card.layout)||"statement";
+  byId("cgText").value=(p.card&&p.card.text)||"";
+  document.querySelectorAll("#cgTmpls .tmpl").forEach(function(b){b.classList.toggle("on",b.dataset.t===cardState.template);});
+  document.querySelectorAll("#cgTypes .tmpl").forEach(function(b){b.classList.toggle("on",b.dataset.ly===cardState.layout);});
+  drawPreview();
+}
+function drawThumbs(){document.querySelectorAll("[data-thumb]").forEach(function(cv){var id=cv.getAttribute("data-thumb");var p=state.posts.filter(function(x){return x.id===id;})[0];if(p&&p.card)drawCard(cv,{template:p.card.template,layout:p.card.layout,text:p.card.text||firstLine(p.text),pillar:pillarOf(p.pillar).name,author:authorOf(p.author).name});});}
 
 /* ====== slack-voorbeeld ====== */
 var slackOverlay;
@@ -774,7 +804,7 @@ function buildPrompt(aId,pId,topic){
   return "Je schrijft een LinkedIn-post voor FLINZ.\n\n"+
   "OVER FLINZ: FLINZ optimaliseert wagenparkverzekering en schadebeheer met AI, voor wagenparkbeheerders, leasemaatschappijen en verzekeraars in de Benelux. Kernbegrippen: 'Sustainably Less' (onnodige complexiteit en kost wegnemen), 'Co-responsibility' (risico en beloning delen) en de 'Fleet Intelligence Grid' (een netwerk dat schade voorkomt in plaats van beheert).\n\n"+
   "AUTEUR/STEM: "+voice+"\n\nPIJLER: "+pillarOf(pId).name+"\n"+(topic?("ONDERWERP: "+topic+"\n"):"")+"\n"+
-  "HARDE STIJLREGELS:\n1. Schrijf in het Nederlands.\n2. Gebruik GEEN gedachte- of koppelstreepjes. Gebruik komma's of punten.\n3. Geen AI-buzz (geen 'unlock', 'leverage', 'game-changer', 'in een wereld waarin', 'de kracht van').\n4. Sterke hook op regel 1. Korte zinnen. Witruimte tussen alinea's.\n5. Concreet boven algemeen. Verzin GEEN cijfers, gebruik [X%] als plaatshouder.\n6. Maximaal 3 hashtags, optioneel.\n7. Executive toon, geen holle superlatieven.\n\nLever 3 varianten, genummerd. Voeg per variant een korte beeldsuggestie toe.";
+  "HARDE STIJLREGELS:\n1. Schrijf in het Nederlands.\n2. Gebruik GEEN gedachte- of koppelstreepjes. Gebruik komma's of punten.\n3. Geen AI-buzz (geen 'unlock', 'leverage', 'game-changer', 'in een wereld waarin', 'de kracht van').\n4. Sterke hook op regel 1. Korte zinnen. Witruimte tussen alinea's.\n5. Concreet boven algemeen. Verzin GEEN cijfers, gebruik [X%] als plaatshouder.\n6. Sluit af met een lege regel en precies 3 relevante Nederlandse hashtags (bijvoorbeeld #wagenparkbeheer #fleetmanagement #insurtech).\n7. Executive toon, geen holle superlatieven.\n\nLever 3 varianten, genummerd. Voeg per variant een korte beeldsuggestie toe.";
 }
 
 /* ====== stijlgids ====== */
@@ -838,6 +868,7 @@ function boot(){
   document.addEventListener("keydown",function(e){if(e.key==="Escape"){if(slackOverlay.classList.contains("show"))slackOverlay.classList.remove("show");else if(overlay.classList.contains("show"))closeEditor();}});
   // card gen
   document.querySelectorAll("#cgTmpls .tmpl").forEach(function(b){b.onclick=function(){cardState.template=this.dataset.t;document.querySelectorAll("#cgTmpls .tmpl").forEach(function(x){x.classList.toggle("on",x===b);});drawPreview();};});
+  document.querySelectorAll("#cgTypes .tmpl").forEach(function(b){b.onclick=function(){cardState.layout=this.dataset.ly;document.querySelectorAll("#cgTypes .tmpl").forEach(function(x){x.classList.toggle("on",x===b);});drawPreview();};});
   byId("cgText").addEventListener("input",drawPreview);
   byId("fText").addEventListener("input",function(){if(!byId("cgText").value.trim())drawPreview();});
   byId("fPillar").addEventListener("change",drawPreview);
@@ -845,7 +876,7 @@ function boot(){
   byId("fAuthor").addEventListener("change",renderLiPreview);
   byId("fPillar").addEventListener("change",renderLiPreview);
   byId("fImage").addEventListener("input",renderLiPreview);
-  byId("cgAttach").onclick=async function(){var p=state.editing;if(!p)return;p.card={template:cardState.template,text:byId("cgText").value.trim()};if(!p.image)p.image="FLINZ-kaart";if(!p._new){try{await updateFields(p.id,{card:p.card,image:p.image});}catch(e){}}renderLiPreview();toast("Beeldkaart gekoppeld.");};
+  byId("cgAttach").onclick=async function(){var p=state.editing;if(!p)return;p.card={template:cardState.template,layout:cardState.layout,text:byId("cgText").value.trim()};if(!p.image)p.image="FLINZ-kaart";if(!p._new){try{await updateFields(p.id,{card:p.card,image:p.image});}catch(e){}}renderLiPreview();toast("Beeldkaart gekoppeld.");};
   byId("cgDownload").onclick=function(){try{var url=byId("cgCanvas").toDataURL("image/png");var a=document.createElement("a");a.href=url;a.download="flinz-post.png";a.click();toast("PNG gedownload.");}catch(e){toast("Downloaden niet gelukt.");}};
   // slack
   byId("slClose").onclick=function(){slackOverlay.classList.remove("show");};
