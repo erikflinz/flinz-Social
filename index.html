@@ -203,27 +203,28 @@
   .sl-opt .t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
   .sl-votes{font-family:var(--mono);font-size:11px;color:var(--orange);white-space:nowrap}
 
-  /* content board */
-  .board{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;align-items:start}
+  /* content board (compact) */
+  .board{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;align-items:start}
   @media(max-width:900px){.board{grid-template-columns:1fr}}
-  .bcolhead{display:flex;align-items:center;gap:8px;margin-bottom:12px;padding:0 2px}
-  .bcolhead .dot{width:9px;height:9px;border-radius:50%}
-  .bcolhead h3{font-size:13.5px;margin:0;font-weight:700}
-  .bcolhead .count{font-family:var(--mono);font-size:11px;color:var(--muted);background:var(--panel);border:1px solid var(--line);padding:1px 8px;border-radius:20px}
-  .bcard{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:14px;margin-bottom:12px;cursor:pointer;transition:box-shadow .15s,transform .05s}
-  .bcard:hover{box-shadow:0 6px 20px rgba(26,29,33,.08)}
+  .bcolhead{display:flex;align-items:center;gap:8px;margin-bottom:10px;padding:0 2px}
+  .bcolhead .dot{width:8px;height:8px;border-radius:50%}
+  .bcolhead h3{font-size:13px;margin:0;font-weight:700}
+  .bcolhead .count{font-family:var(--mono);font-size:10.5px;color:var(--muted);background:var(--panel);border:1px solid var(--line);padding:1px 7px;border-radius:20px}
+  .bcard{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:11px 12px;margin-bottom:8px;cursor:pointer;transition:box-shadow .15s,transform .05s}
+  .bcard:hover{box-shadow:0 4px 14px rgba(26,29,33,.07)}
   .bcard:active{transform:translateY(1px)}
-  .bcard-top{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
-  .bcard-text{font-size:13px;color:#2c313a;line-height:1.5;white-space:pre-wrap;display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden}
-  .bcard-media{margin-top:10px}
-  .bcard-media canvas{width:150px;max-width:100%;border-radius:9px;border:1px solid var(--line);display:block}
-  .bcard-note{margin-top:9px;font-size:11.5px;color:var(--faint)}
-  .bcard-foot{display:flex;align-items:center;gap:10px;margin-top:12px;padding-top:11px;border-top:1px solid var(--line);flex-wrap:wrap}
+  .bcard-top{display:flex;align-items:center;gap:6px;margin-bottom:7px;flex-wrap:wrap}
+  .bcard-top .tag{font-size:10.5px;padding:2px 7px}
+  .bcard-text{font-size:12.5px;color:#2c313a;line-height:1.45;white-space:pre-wrap;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .bcard-media{margin-top:8px}
+  .bcard-media canvas{width:56px;height:56px;border-radius:8px;border:1px solid var(--line);display:block}
+  .bcard-note{margin-top:7px;font-size:11px;color:var(--faint)}
+  .bcard-foot{display:flex;align-items:center;gap:8px;margin-top:9px;padding-top:8px;border-top:1px solid var(--line);flex-wrap:wrap;font-size:11.5px}
   .bcard-act{margin-left:auto}
-  .mini{font-size:12px;font-weight:600;padding:5px 11px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink)}
+  .mini{font-size:11.5px;font-weight:600;padding:4px 10px;border-radius:7px;border:1px solid var(--line);background:var(--panel);color:var(--ink)}
   .mini:hover{background:var(--bg)}
   .mini.orange{background:var(--orange);color:#fff;border-color:var(--orange)}
-  .bcol-empty{border:1px dashed var(--line);border-radius:12px;padding:20px;text-align:center;color:var(--faint);font-size:12.5px}
+  .bcol-empty{border:1px dashed var(--line);border-radius:10px;padding:16px;text-align:center;color:var(--faint);font-size:12px}
 
   /* editor two-column + linkedin preview */
   .editor-grid{display:grid;grid-template-columns:1fr 330px;gap:24px}
@@ -242,6 +243,13 @@
   .li-media-note{margin-top:12px;padding:16px;border:1px dashed var(--line);border-radius:8px;text-align:center;color:var(--faint);font-size:12px}
   .li-actions{display:flex;justify-content:space-around;margin-top:12px;padding-top:10px;border-top:1px solid var(--line);color:#7b7b7b;font-size:12px;font-weight:600}
   .li-actions span{display:inline-flex;align-items:center;gap:5px}
+
+  /* AI variants */
+  .ai-variants{margin-top:18px;display:flex;flex-direction:column;gap:12px}
+  .ai-var{border:1px solid var(--line);border-radius:12px;padding:15px;background:var(--panel)}
+  .ai-var-h{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+  .ai-img{font-size:11.5px;color:var(--faint)}
+  .ai-var-t{font-size:13.5px;line-height:1.55;color:var(--ink);white-space:pre-wrap;margin-bottom:12px}
   /* login */
   .login-overlay{position:fixed;inset:0;background:var(--bg);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
   .login-overlay.show{display:flex}
@@ -707,26 +715,59 @@ function openSlack(){
 /* ====== new / generate ====== */
 var nA="willem",nP="cat",nT="";
 function renderNew(){
-  app.innerHTML='<h1 class="greet">Nieuw bericht</h1><p class="sub" style="margin-top:-2px">Genereer een prompt voor Claude, of schrijf zelf.</p>'+
+  app.innerHTML='<h1 class="greet">Nieuw bericht</h1><p class="sub" style="margin-top:-2px">Laat de AI drie varianten in FLINZ-stem schrijven, of schrijf zelf.</p>'+
     '<div class="card-panel">'+
       '<div class="row">'+
         '<div class="field"><label class="lb">Auteur</label><select class="full" id="nA">'+AUTHORS.map(function(a){return '<option value="'+a.id+'"'+(a.id===nA?' selected':'')+'>'+a.name+'</option>';}).join("")+'</select></div>'+
         '<div class="field"><label class="lb">Pijler</label><select class="full" id="nP">'+PILLARS.map(function(p){return '<option value="'+p.id+'"'+(p.id===nP?' selected':'')+'>'+p.name+'</option>';}).join("")+'</select></div>'+
       '</div>'+
       '<div class="field"><label class="lb">Onderwerp of insteek (optioneel)</label><input class="full" id="nT" placeholder="bijv. kostenreductie bij glasschade" value="'+escapeHtml(nT)+'"></div>'+
-      '<div class="row" style="margin-top:16px"><button class="btn orange" id="genBtn">Genereer prompt voor Claude</button><button class="btn ghost" id="writeBtn">Schrijf zelf</button></div>'+
+      '<div class="row" style="margin-top:16px"><button class="btn orange" id="aiBtn">Genereer met AI</button><button class="btn ghost" id="genBtn">Genereer prompt voor Claude</button><button class="btn ghost" id="writeBtn">Schrijf zelf</button></div>'+
       '<div id="promptWrap"></div>'+
-      '<div class="hint"><b>Werkwijze:</b> kopieer de prompt, plak in Claude, kopieer het beste antwoord en plak het terug via <span class="kbd">Schrijf zelf</span>. Streepjes worden bij opslaan opgeschoond.<br><br><b>Formats die nu werken:</b> sterke hook op regel 1, korte regels met witruimte, carrousel als PDF, polls, native video.</div>'+
+      '<div class="hint"><b>Genereer met AI</b> schrijft direct drie varianten in FLINZ-stem. Je kiest er een, past aan en bewaart. Werkt alleen op de live site, niet op localhost. <b>Genereer prompt voor Claude</b> is de gratis terugval: kopieer de prompt en plak in Claude.</div>'+
     '</div>';
   byId("nA").onchange=function(){nA=this.value;};
   byId("nP").onchange=function(){nP=this.value;};
   byId("nT").oninput=function(){nT=this.value;};
-  byId("writeBtn").onclick=function(){openEditor(null);state.editing.author=nA;state.editing.pillar=nP;fillSelect(byId("fAuthor"),AUTHORS,nA);fillSelect(byId("fPillar"),PILLARS,nP);drawPreview();};
+  byId("aiBtn").onclick=generateAI;
+  byId("writeBtn").onclick=function(){openEditor(null);state.editing.author=nA;state.editing.pillar=nP;fillSelect(byId("fAuthor"),AUTHORS,nA);fillSelect(byId("fPillar"),PILLARS,nP);drawPreview();renderLiPreview();};
   byId("genBtn").onclick=function(){
     var pr=buildPrompt(nA,nP,nT);
     byId("promptWrap").innerHTML='<div style="margin-top:16px;display:flex;align-items:center;gap:10px"><span class="eyebrow">Prompt</span><button class="btn ghost sm" id="cpPrompt">Kopieer prompt</button></div><div class="promptbox">'+escapeHtml(pr)+'</div>';
     byId("cpPrompt").onclick=function(){copyText(pr);toast("Prompt gekopieerd. Plak in Claude.");};
   };
+}
+var lastVariants=[];
+async function generateAI(){
+  var btn=byId("aiBtn");btn.disabled=true;btn.textContent="Bezig met genereren...";
+  byId("promptWrap").innerHTML='<div class="hint" style="border:none;padding-top:14px">Even geduld, de AI schrijft drie varianten in FLINZ-stem\u2026</div>';
+  try{
+    var res=await fetch("/generate",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({author:nA,pillar:nP,topic:nT})});
+    var data=await res.json();
+    if(!res.ok||data.error)throw new Error(data.error||("Fout "+res.status));
+    lastVariants=data.variants||[];
+    if(!lastVariants.length)throw new Error("Geen varianten ontvangen.");
+    var h='<div class="ai-variants">';
+    lastVariants.forEach(function(v,i){
+      var t=cleanDashes(v.text||"");
+      h+='<div class="ai-var"><div class="ai-var-h"><span class="eyebrow">Variant '+(i+1)+'</span>'+(v.image?'<span class="ai-img">\uD83D\uDCF7 '+escapeHtml(v.image)+'</span>':'')+'</div><div class="ai-var-t">'+escapeHtml(t).replace(/\n/g,"<br>")+'</div><button class="btn orange sm" data-use="'+i+'">Gebruik deze</button></div>';
+    });
+    h+='</div>';
+    byId("promptWrap").innerHTML=h;
+    byId("promptWrap").querySelectorAll("[data-use]").forEach(function(el){el.onclick=function(){useVariant(parseInt(this.getAttribute("data-use"),10));};});
+  }catch(e){
+    byId("promptWrap").innerHTML='<div class="flag" style="margin-top:16px">Genereren mislukt: '+escapeHtml(e.message||String(e))+'.<br><br>Test je lokaal (localhost)? De AI werkt alleen op de live site flinz-social.pages.dev. Gebruik lokaal de knop \u201cGenereer prompt voor Claude\u201d.</div>';
+  }
+  btn.disabled=false;btn.textContent="Genereer met AI";
+}
+function useVariant(i){
+  var v=lastVariants[i];if(!v)return;
+  openEditor(null);
+  state.editing.author=nA;state.editing.pillar=nP;
+  fillSelect(byId("fAuthor"),AUTHORS,nA);fillSelect(byId("fPillar"),PILLARS,nP);
+  byId("fText").value=cleanDashes(v.text||"");
+  if(v.image)byId("fImage").value=v.image;
+  updateFlags();drawPreview();renderLiPreview();
 }
 function buildPrompt(aId,pId,topic){
   var voice={willem:"Willem de Keijzer, de relatie- en ecosysteemstem. Commercieel, warm, concreet.",peter:"Peter Verbraeken, de technologie- en visiestem. Technische autoriteit over de Fleet Intelligence Grid, data en categorievisie.",flinz:"De FLINZ-bedrijfspagina. Versterkt de founders, deelt mijlpalen en inzichten. Zakelijk maar menselijk."}[aId];
