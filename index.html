@@ -230,24 +230,27 @@
   .editor-grid{display:grid;grid-template-columns:1fr 330px;gap:24px}
   @media(max-width:820px){.editor-grid{grid-template-columns:1fr}}
   .editor-right .lb{margin-bottom:8px}
-  .li-preview{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px;box-shadow:0 2px 10px rgba(0,0,0,.04);position:sticky;top:0}
-  .li-head{display:flex;gap:10px;align-items:flex-start;margin-bottom:12px}
-  .li-av{width:48px;height:48px;border-radius:50%;color:#fff;font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:center;flex:none}
-  .li-av.sq{border-radius:10px}
+  .li-preview{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 16px 6px;box-shadow:0 2px 10px rgba(0,0,0,.04);position:sticky;top:0;font-family:var(--sans)}
+  .li-head{display:flex;gap:8px;align-items:flex-start;margin-bottom:10px}
+  .li-av{width:48px;height:48px;border-radius:50%;color:#fff;font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:center;flex:none;object-fit:cover}
+  img.li-av{background:#eee}
+  .li-av.sq{border-radius:8px}
   .li-meta{flex:1;min-width:0}
-  .li-name-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
-  .li-name{font-weight:700;font-size:14px;color:#1d1c1d;line-height:1.2}
-  .li-follow{color:#0a66c2;font-weight:700;font-size:13px;white-space:nowrap;flex:none}
-  .li-sub{font-size:11.5px;color:#7b7b7b;margin-top:2px}
-  .li-body{font-size:13.5px;color:#1d1c1d;line-height:1.5;white-space:pre-wrap;word-wrap:break-word;overflow-wrap:anywhere;margin-top:4px}
-  .li-link{color:#0a66c2;font-weight:600}
-  .li-more{color:#5b6472}
-  .li-rest{color:#1d1c1d}
+  .li-name-row{display:flex;align-items:center;gap:6px}
+  .li-name{font-weight:600;font-size:14px;color:rgba(0,0,0,.9);line-height:1.3}
+  .li-follow{color:#0a66c2;font-weight:600;font-size:14px;white-space:nowrap;margin-left:auto}
+  .li-follow::before{content:"+ "}
+  .li-sub{font-size:12px;color:rgba(0,0,0,.6);margin-top:1px;line-height:1.3}
+  .li-body{font-size:14px;color:rgba(0,0,0,.9);line-height:1.45;white-space:pre-wrap;word-wrap:break-word;overflow-wrap:anywhere;margin:6px 0 12px}
+  .li-link{color:#0a66c2;font-weight:400}
+  .li-more{color:rgba(0,0,0,.6)}
+  .li-rest{color:rgba(0,0,0,.9)}
   .li-ph{color:#b0b0b0}
-  .li-media{width:100%;border-radius:8px;margin-top:12px;border:1px solid var(--line);display:block}
+  .li-media{width:calc(100% + 32px);margin:0 -16px;border-top:1px solid #ededed;border-bottom:1px solid #ededed;display:block}
   .li-media-note{margin-top:12px;padding:16px;border:1px dashed var(--line);border-radius:8px;text-align:center;color:var(--faint);font-size:12px}
-  .li-bar{display:flex;justify-content:space-around;margin-top:10px;padding-top:8px;border-top:1px solid var(--line);color:#5b6472;font-size:12px;font-weight:600}
-  .li-bar span{display:inline-flex;align-items:center;gap:5px}
+  .li-bar{display:flex;justify-content:space-around;margin-top:4px;padding:4px 0;border-top:1px solid #ededed;color:rgba(0,0,0,.6);font-size:13px;font-weight:600}
+  .li-bar span{display:inline-flex;align-items:center;gap:6px;padding:8px 6px}
+  .li-bar svg{flex:none}
 
   /* AI variants */
   .ai-variants{margin-top:18px;display:flex;flex-direction:column;gap:12px}
@@ -418,6 +421,8 @@ var AUTHORS=[
   {id:"peter",name:"Peter Verbraeken",color:"#0F766E"},
   {id:"flinz",name:"FLINZ (pagina)",color:"#1E2632"}
 ];
+// Echte profielfoto's per auteur (data-URL). Leeg = initialen als terugval.
+var AUTHOR_PHOTOS={willem:"",peter:"",flinz:""};
 var STATUSES=[
   {id:"concept",name:"Concept",cls:"grey"},
   {id:"approved",name:"Goedgekeurd",cls:"orange"},
@@ -638,6 +643,13 @@ async function commit(status){
 }
 
 /* ====== linkedin preview ====== */
+var LI_ICON={
+  globe:'<svg viewBox="0 0 16 16" width="12" height="12" fill="#00000099" style="vertical-align:-1px"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zm5.4 6H11a11 11 0 00-.5-2.6A5.5 5.5 0 0113.4 7zM8 2.5c.6.8 1 1.7 1.2 2.5H6.8C7 4.2 7.4 3.3 8 2.5zM2.6 9A5.6 5.6 0 012.5 7h2A13 13 0 004.5 9zm.9 1.5h1.4c.2.9.5 1.7.9 2.4A5.5 5.5 0 013.5 10.5zM6.8 11h2.4C9 11.9 8.6 12.7 8 13.5c-.6-.8-1-1.6-1.2-2.5zm.4-1.5A11 11 0 016.8 7h2.4a11 11 0 010 2.5zM11 10.5h1.4a5.5 5.5 0 01-2.3 2.4c.4-.7.7-1.5.9-2.4zM11 9c.1-.7.1-1.4 0-2h2.4A5.6 5.6 0 0113.4 9z"/></svg>',
+  like:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#5f6368" stroke-width="1.7" stroke-linejoin="round"><path d="M7 10v9H4a1 1 0 01-1-1v-7a1 1 0 011-1h3zm0 0l3.5-6.5A1.5 1.5 0 0113 5v3h4.6a1.6 1.6 0 011.6 2l-1.3 6a1.6 1.6 0 01-1.6 1.3H7"/></svg>',
+  comment:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#5f6368" stroke-width="1.7" stroke-linejoin="round"><path d="M21 11.5a7.5 7.5 0 01-10.8 6.7L4 20l1.8-4.2A7.5 7.5 0 1121 11.5z"/></svg>',
+  repost:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#5f6368" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9l3-3 3 3M7 6v8a2 2 0 002 2h5M20 15l-3 3-3-3M17 18v-8a2 2 0 00-2-2h-5"/></svg>',
+  send:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#5f6368" stroke-width="1.7" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>'
+};
 function liInitials(name){var pp=(name||"").replace(/\(.*\)/,"").trim().split(/\s+/);return (((pp[0]||"")[0]||"")+((pp[1]||"")[0]||"")).toUpperCase();}
 function liStyle(s){return escapeHtml(s).replace(/(https?:\/\/[^\s<]+)/g,'<span class="li-link">$1</span>').replace(/(#[\p{L}\p{N}_]+)/gu,'<span class="li-link">$1</span>').replace(/\n/g,"<br>");}
 function renderLiPreview(){
@@ -646,6 +658,8 @@ function renderLiPreview(){
   var subs={willem:"Medeoprichter @ FLINZ",peter:"Medeoprichter @ FLINZ",flinz:"Fleet Intelligence Grid \u00b7 Benelux"};
   var sub=subs[au.id]||"FLINZ";
   var isCompany=au.id==="flinz";
+  var photo=AUTHOR_PHOTOS[au.id];
+  var avatar=photo?'<img class="li-av'+(isCompany?' sq':'')+'" src="'+photo+'">':'<div class="li-av'+(isCompany?' sq':'')+'" style="background:'+au.color+'">'+escapeHtml(liInitials(au.name)||"F")+'</div>';
   var text=cleanDashes(byId("fText").value);
   var body;
   if(text.trim()===""){body='<span class="li-ph">Je post verschijnt hier terwijl je typt\u2026</span>';}
@@ -662,16 +676,20 @@ function renderLiPreview(){
     media='<div class="li-media-note">Beeld: '+escapeHtml(byId("fImage").value.trim())+'</div>';
   }
   box.innerHTML=
-    '<div class="li-head">'+
-      '<div class="li-av'+(isCompany?' sq':'')+'" style="background:'+au.color+'">'+escapeHtml(liInitials(au.name)||"F")+'</div>'+
+    '<div class="li-head">'+avatar+
       '<div class="li-meta">'+
-        '<div class="li-name-row"><span class="li-name">'+escapeHtml(au.name)+'</span><span class="li-follow">+ Volgen</span></div>'+
+        '<div class="li-name-row"><span class="li-name">'+escapeHtml(au.name)+'</span><span class="li-follow">Volgen</span></div>'+
         '<div class="li-sub">'+sub+'</div>'+
-        '<div class="li-sub">1u \u00b7 \uD83C\uDF10</div>'+
+        '<div class="li-sub">1u \u00b7 '+LI_ICON.globe+'</div>'+
       '</div>'+
     '</div>'+
     '<div class="li-body">'+body+'</div>'+media+
-    '<div class="li-bar"><span>\uD83D\uDC4D Like</span><span>\uD83D\uDCAC Reageren</span><span>\uD83D\uDD01 Opnieuw plaatsen</span><span>\u27A4 Versturen</span></div>';
+    '<div class="li-bar">'+
+      '<span>'+LI_ICON.like+'Vind ik leuk</span>'+
+      '<span>'+LI_ICON.comment+'Reageren</span>'+
+      '<span>'+LI_ICON.repost+'Opnieuw plaatsen</span>'+
+      '<span>'+LI_ICON.send+'Versturen</span>'+
+    '</div>';
 }
 
 /* ====== clipboard ====== */
